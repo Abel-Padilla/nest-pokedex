@@ -4,16 +4,23 @@ import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { isValidObjectId, Model } from 'mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PokemonService {
+
+  private defaultLimit: number;
 
   constructor(
 
     @InjectModel(Pokemon.name)
     private readonly pokemonModel: Model<Pokemon>,
+    private readonly configService: ConfigService,
+  ) {
 
-  ) { };
+    this.defaultLimit = configService.getOrThrow<number>('defaultLimit');
+  };
 
   async create(createPokemonDto: CreatePokemonDto) {
     createPokemonDto.name = createPokemonDto.name.toLowerCase();
@@ -25,8 +32,16 @@ export class PokemonService {
     }
   }
 
-  findAll() {
-    return this.pokemonModel.find();
+  findAll(paginationDto: PaginationDto) {
+    const defaultLimit = +process.env.DEFAULT_LIMIT!;
+    const { limit = defaultLimit, offset = 0 } = paginationDto;
+    return this.pokemonModel.find()
+      .limit(limit)
+      .skip(offset)
+      .sort({
+        no: 1
+      })
+      .select('-__v');
   }
 
   async findOne(term: string) {
@@ -67,7 +82,6 @@ export class PokemonService {
   }
 
   async remove(@Param('id',) id: string) {
-    //const pokemon = await this.findOne(id);
     const { deletedCount, acknowledged } = await this.pokemonModel.deleteOne({ _id: id });
 
     if (deletedCount === 0)

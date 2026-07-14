@@ -61,7 +61,11 @@ cp .env.template .env
 docker compose up -d
 ```
 
-6. Inicia la aplicación.
+6. Clonar el archivo __.env.template__ y renombrar la copia a __.env__
+
+7. Llenar las variables de entorno definidas en el ```.env```
+
+8. Inicia la aplicación.
 
 ```bash
 yarn start:dev
