@@ -94,6 +94,18 @@ Esto descargará la información inicial de Pokémon y la almacenará en MongoDB
 - Docker
 - Docker Compose
 
+# Production build
+
+1. Crear el archivo ```.env.prod```
+2. Llenar las variables de entorno de prod
+3. Construir la imagen
+
+```bash
+docker-compose -f docker-compose.prod.yaml --env-file .env.prod build --no-cache
+```
+
+
+
 ---
 
 ## Scripts disponibles
